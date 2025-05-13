@@ -1,22 +1,8 @@
 package com.devatikul.inappupdate;
 
-import android.annotation.SuppressLint;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,12 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
    private LinearProgressIndicator progressBar;
    private TextView percentageText;
-
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -71,48 +51,38 @@ public class MainActivity extends AppCompatActivity {
       AlertDialog.Builder builder = new AlertDialog.Builder(this);
       builder.setTitle("Update Available")
               .setMessage("A new version of the app is available. Would you like to update?")
-              .setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                 @Override
-                 public void onClick(DialogInterface dialog, int which) {
-                    new AppUpdater(MainActivity.this)
-                            .setAppUrl(APK_FILE_URL)
-                            .setFileNameFromUrl()
-                            .setOnDownloadListener(new onDownloadListener() {
-                               @Override
-                               public void onBuffer(String connectingMsg) {
+              .setPositiveButton("Update", (dialog, which) -> new AppUpdater(MainActivity.this)
+                      .setAppUrl(APK_FILE_URL)
+                      .setFileNameFromUrl()
+                      .setOnDownloadListener(new onDownloadListener() {
+                         @Override
+                         public void onBuffer(String connectingMsg) {
 
-                               }
+                         }
 
-                               @Override
-                               public void onProgress(int progress) {
-                                  progressBar.setVisibility(View.VISIBLE);
-                                  percentageText.setVisibility(View.VISIBLE);
-                                  progressBar.setProgress(progress);
-                                  percentageText.setText(progress + "%");
-                               }
+                         @Override
+                         public void onProgress(int progress) {
+                            progressBar.setVisibility(View.VISIBLE);
+                            percentageText.setVisibility(View.VISIBLE);
+                            progressBar.setProgress(progress);
+                            percentageText.setText(progress + "%");
+                         }
 
-                               @Override
-                               public void onComplete(File path) {
-                                  progressBar.setVisibility(View.GONE);
-                                  percentageText.setVisibility(View.GONE);
-                               }
+                         @Override
+                         public void onComplete(File path) {
+                            progressBar.setVisibility(View.GONE);
+                            percentageText.setVisibility(View.GONE);
+                         }
 
-                               @Override
-                               public void onError(String errorMsg) {
-
-                               }
-                            }).start();
-                 }
-              })
-              .setNegativeButton("Later", new DialogInterface.OnClickListener() {
-                 @Override
-                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                 }
-              })
+                         @Override
+                         public void onError(String errorMsg) {
+                            Toast.makeText(MainActivity.this, "Error: "+errorMsg, Toast.LENGTH_SHORT).show();
+                            checkForAppUpdate();
+                         }
+                      }).start())
+              .setNegativeButton("Later", (dialog, which) -> dialog.dismiss())
               .setCancelable(false)
               .show();
    }
-
 
 }
