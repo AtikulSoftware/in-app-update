@@ -3,7 +3,6 @@ package com.devatikul.inappupdate;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,22 +19,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AppUpdater {
-   private Context context;
+   private final Context context;
    private String updateFileUrl;
    private String updateFileName;
    private String connectionError;
    private onDownloadListener onDownloadListener;
 
-   public AppUpdater setUp(Context context) {
+   public AppUpdater(Context context) {
       this.context = context;
-      return this;
    }
 
    public AppUpdater setAppUrl(String url) {
       if (URLUtil.isValidUrl(url)) {
          this.updateFileUrl = url;
       } else {
-         throw new IllegalArgumentException("your url is not valid");
+         throw new IllegalArgumentException("app url is not valid");
       }
       return this;
    }
@@ -95,8 +93,8 @@ public class AppUpdater {
 
             URL url = new URL(fileUrl);
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setConnectTimeout(10000);
-            httpURLConnection.setReadTimeout(10000);
+            httpURLConnection.setConnectTimeout(12000);
+            httpURLConnection.setReadTimeout(12000);
             httpURLConnection.setRequestMethod("GET");
             httpURLConnection.connect();
 
@@ -117,7 +115,7 @@ public class AppUpdater {
 
                total += count;
                if (fileLength > 0) {
-                  int progress = (int) total * 100 / fileLength;
+                  int progress = total * 100 / fileLength;
                   new Handler(Looper.getMainLooper()).post(() -> {
                      if (onDownloadListener != null) {
                         onDownloadListener.onProgress(progress);

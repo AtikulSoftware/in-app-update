@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
               .setPositiveButton("Update", new DialogInterface.OnClickListener() {
                  @Override
                  public void onClick(DialogInterface dialog, int which) {
-                    new AppUpdater().setUp(MainActivity.this)
+                    new AppUpdater(MainActivity.this)
                             .setAppUrl(APK_FILE_URL)
                             .setFileNameFromUrl()
                             .setOnDownloadListener(new onDownloadListener() {
